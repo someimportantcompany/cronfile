@@ -1,6 +1,6 @@
 {
   "name": "cronfile",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Simple JS-based cron operations",
   "main": "lib/cron.js",
   "scripts": {
