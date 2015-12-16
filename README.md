@@ -18,7 +18,7 @@ Every single time we're writing a cron script for our app, it always looks somet
 
 Where the files all look something like:
 
-```
+```js
 var execute = function (callback) {
   do_some_action({ flush_cache: true }, callback);
 };
@@ -33,7 +33,7 @@ execute(function (err) {
 
 In it's simplest usage:
 
-```
+```js
 var cron = require('cronfile');
 
 cron.on('*/1 * * * *', function (callback) {
@@ -72,7 +72,7 @@ MAILTO="crons@myawesomeprojectwebsite.com"
 You can attach events to times based on human-readable aliases rather than cron-timestamps, as defined in the
 [`aliases.json`](./aliases.json) file, so the above example could actually look like:
 
-```
+```js
 var cron = require('cronfile');
 
 cron.on('every_minute', function (callback) {
@@ -103,7 +103,7 @@ functions to run after the cronfile has finished (after all the time-based funct
 
 For example, if all your time-based functions use a database connection:
 
-```
+```js
 var connections = require('./lib/connections');
 var cron = require('cronfile');
 
@@ -136,7 +136,7 @@ cron.run();
 Add new cron functions to the cronfile. You can attach functions to specific cron-formatted times, or an alias, or an
 event:
 
-```
+```js
 cron.on('*/1 * * * *', function (callback) {
   console.log('Executing this function every minute!');
   callback();
@@ -147,7 +147,7 @@ cron.on('*/1 * * * *', function (callback) {
 
 Add new aliases to the cronfile for you to use.
 
-```
+```js
 cron.aliases({
   '* 2 * * *': '2AM',
   '* */5 * * *': [
@@ -159,7 +159,7 @@ cron.aliases({
 ### cron.run
 
 ```
-cron.run([callback]);
+cron.run([callback])
 ```
 
 This function executes the cronfile. You can only run this once, and it will error appropriately if you try to run it
@@ -168,7 +168,7 @@ perform custom actions when the cronfile has finished, although you may prefer t
 
 For example, to send errors to a Slack channel:
 
-```
+```js
 var Slack = require('./lib/slack');
 
 var bot = new Slack({
