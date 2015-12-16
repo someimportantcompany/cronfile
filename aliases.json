@@ -1,0 +1,25 @@
+{
+
+  "* */3 * * *": "every_three_hours",
+
+  "* */2 * * *": "every_two_hours",
+
+  "* */1 * * *": [
+    "@hourly", "every_hour", "the_hour"
+  ],
+
+  "*/30 * * * *": "every_thirty_minutes",
+
+  "*/20 * * * *": "every_twenty_minutes",
+
+  "*/15 * * * *": "every_fifteen_minutes",
+
+  "*/10 * * * *": "every_ten_minutes",
+
+  "*/5 * * * *": "every_five_minutes",
+
+  "*/2 * * * *": "every_two_minutes",
+
+  "*/1 * * * *": "every_minute"
+
+}

@@ -1,0 +1,45 @@
+{
+  "name": "cronfile",
+  "version": "0.1.0",
+  "description": "Simple JS-based cron operations",
+  "main": "lib/cron.js",
+  "scripts": {
+    "coveralls": "cat coverage/lcov.info | coveralls",
+    "pretest": "jshint . && jscs .",
+    "posttest": "istanbul check-coverage",
+    "test": "istanbul cover _mocha -- -r should tests/**/*.test.js tests/*.test.js"
+  },
+  "files": [
+    "lib",
+    "aliases.json",
+    "cron.js"
+  ],
+  "author": "James D <james@jdrydn.com> (https://jdrydn.com)",
+  "homepage": "https://jdrydn.com/cronfile",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jdrydn/cronfile.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jdrydn/cronfile/issues"
+  },
+  "license": "MIT",
+  "keywords": [
+    "cron"
+  ],
+  "dependencies": {
+    "async": "^1.5.0",
+    "later": "^1.2.0"
+  },
+  "devDependencies": {
+    "coveralls": "^2.11.4",
+    "istanbul": "^0.4.1",
+    "jscs": "^2.7.0",
+    "jshint": "^2.8.0",
+    "lodash": "^3.10.1",
+    "mocha": "^2.3.4",
+    "rewire": "^2.5.1",
+    "should": "^5.2.0",
+    "supertest": "^1.1.0"
+  }
+}
