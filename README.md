@@ -108,7 +108,7 @@ cron.on('every_twenty_minutes', function (callback) {
 cron.run();
 ```
 
-You can also add your own aliases if wish, using [`cron.aliases`](#cronaliases).
+You can also add your own aliases using [`cron.aliases`](#cronaliases).
 
 ## Events
 
@@ -240,7 +240,7 @@ cron.run();
 */1 * * * * /usr/bin/node /var/app/myproject/cron.js
 ```
 
-----
+## One more thing
 
 - Where you've seen `require('./lib/some_file')`, that's not part of this project, that's just an example script to
   demonstrate how other modules and functions can interact with this module.

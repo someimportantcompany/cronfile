@@ -2,7 +2,7 @@
   "name": "cronfile",
   "version": "0.1.4",
   "description": "Simple JS-based cron operations",
-  "main": "lib/cron.js",
+  "main": "cron.js",
   "scripts": {
     "coveralls": "cat coverage/lcov.info | coveralls",
     "pretest": "jshint . && jscs .",
@@ -12,7 +12,6 @@
     "postversion": "git push && git push --tags"
   },
   "files": [
-    "lib",
     "aliases.json",
     "cron.js"
   ],
