@@ -1,0 +1,10 @@
+machine:
+  environment:
+    NODE_ENV: testing
+  node:
+    version: 0.12.7
+  timezone: Atlantic/Reykjavik
+test:
+  override:
+    - npm test
+    - npm run coveralls
