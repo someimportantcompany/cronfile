@@ -27,7 +27,7 @@
   },
   "license": "MIT",
   "keywords": [
-    "cron"
+    "cron", "crontab", "cronjob", "schedule", "schedules", "task", "tasks", "minutes"
   ],
   "dependencies": {
     "async": "^1.5.0",

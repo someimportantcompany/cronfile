@@ -29,6 +29,12 @@ execute(function (err) {
 });
 ```
 
+And that repeats for several files? Yuck. No.
+
+Since most, if not all, of the cron jobs I run on a per-project basis are the same language, Javascript, here is a
+simplified way to write the cron jobs as part of your codebase, checking them into a repository and managing them
+through whichever deployment process you are comfortable with!
+
 ## Usage
 
 In it's simplest usage:
@@ -54,16 +60,19 @@ cron.on('*/20 * * * *', function (callback) {
 cron.run();
 ```
 
-All `cronfile`s are designed to be run every minute, so set your crontab to something like:
+All cron files made with `cronfile` are designed to be run every minute, so set your crontab to something like:
 
 ```
 */1 * * * * ~/project/cron.js
 ```
 
-And add a `MAILTO` environment variable to get any error output emailed to you, like so:
+Optionally, and wisely, you can add a `MAILTO` environment variable to get any error output emailed to you, like so:
 
 ```
+# May require Postfix or an equivalent to be installed...
+# Ask your friendly neighbourhood sysops guy for more information!
 MAILTO="crons@myawesomeprojectwebsite.com"
+# m h dom mon dow command
 */1 * * * * ~/project/cron.js
 ```
 
@@ -156,6 +165,10 @@ cron.aliases({
 });
 ```
 
+This function takes an object where each object key is a valid cron timestamp and the value is a string (or an array
+of strings (for multiple aliases to the same timestamp)) of the alias in question. It can be anything you want, but
+you must keep it unique (otherwise you'll start overwriting aliases and have unexpected side-effects!)
+
 ### cron.run
 
 ```
@@ -192,3 +205,39 @@ cron.run(function (err) {
   else process.exit(0);
 });
 ```
+
+## An Example Environment
+
+```
+- app/
+- cron.js
+- scripts/
+  - crons/
+    - rebuild_user_scores.js
+    - reindex_comments_index.js
+  - development/
+  - production/
+  - staging/
+- tests/
+```
+
+```js
+var cron = require('cronfile');
+
+cron.on('every_minute', require('./scripts/crons/rebuild_user_scores'));
+cron.on('every_fifteen_minutes', require('./scripts/crons/reindex_comments_index'));
+
+cron.run();
+```
+
+```
+*/1 * * * * /var/app/myproject/cron.js
+```
+
+----
+
+- Where you've seen `require('./lib/some_file')`, that's not part of this project, that's just an example script to
+  demonstrate how other modules and functions can interact with this module.
+- Questions? Awesome! [Open an issue](https://github.com/jdrydn/cronfile/issues) or feel free to
+  [tweet me](https://twitter.com/jdrydn) and I'll get back to you!
+- Who am I? If you really wanna know [here's my website](https://jdrydn.com)...
