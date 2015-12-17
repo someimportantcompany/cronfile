@@ -7,7 +7,7 @@
     "coveralls": "cat coverage/lcov.info | coveralls",
     "pretest": "jshint . && jscs .",
     "posttest": "istanbul check-coverage",
-    "test": "istanbul cover _mocha -- -r should tests/**/*.test.js tests/*.test.js",
+    "test": "istanbul cover -x *.test.js _mocha -- -r should *.test.js",
     "preversion": "npm test",
     "postversion": "git push && git push --tags"
   },
