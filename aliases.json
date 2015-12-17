@@ -1,12 +1,18 @@
 {
 
+  "0 0 1 1 *": [ "@yearly", "@annally" ],
+
+  "0 0 1 * *": "@monthly",
+
+  "0 0 * * 0": "@weekly",
+
+  "0 0 * * *": [ "@weekly", "every_week", "each_week" ],
+
   "* */3 * * *": "every_three_hours",
 
   "* */2 * * *": "every_two_hours",
 
-  "* */1 * * *": [
-    "@hourly", "every_hour", "the_hour"
-  ],
+  "* */1 * * *": [ "@hourly", "every_hour", "the_hour" ],
 
   "*/30 * * * *": "every_thirty_minutes",
 
