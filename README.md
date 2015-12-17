@@ -1,9 +1,7 @@
 # Cronfile
 
-[![Circle CI](https://circleci.com/gh/jdrydn/cronfile/tree/master.svg?style=shield)]
-(https://circleci.com/gh/jdrydn/cronfile/tree/master)
-[![Coverage Status](https://coveralls.io/repos/jdrydn/cronfile/badge.svg?branch=master&service=github)]
-(https://coveralls.io/github/jdrydn/cronfile?branch=master)
+![Circle CI](https://circleci.com/gh/jdrydn/cronfile/tree/master.svg?style=shield)
+![Coverage Status](https://coveralls.io/repos/jdrydn/cronfile/badge.svg?branch=master&service=github)
 
 A rather elegant solution to running cron jobs in Node.
 
