@@ -63,7 +63,7 @@ cron.run();
 All cron files made with `cronfile` are designed to be run every minute, so set your crontab to something like:
 
 ```
-*/1 * * * * ~/project/cron.js
+*/1 * * * * /usr/bin/node ~/project/cron.js
 ```
 
 Optionally, and wisely, you can add a `MAILTO` environment variable to get any error output emailed to you, like so:
@@ -73,7 +73,7 @@ Optionally, and wisely, you can add a `MAILTO` environment variable to get any e
 # Ask your friendly neighbourhood sysops guy for more information!
 MAILTO="crons@myawesomeprojectwebsite.com"
 # m h dom mon dow command
-*/1 * * * * ~/project/cron.js
+*/1 * * * * /usr/bin/node ~/project/cron.js
 ```
 
 ## Aliases
@@ -231,7 +231,7 @@ cron.run();
 ```
 
 ```
-*/1 * * * * /var/app/myproject/cron.js
+*/1 * * * * /usr/bin/node /var/app/myproject/cron.js
 ```
 
 ----
