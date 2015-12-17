@@ -76,6 +76,9 @@ MAILTO="crons@myawesomeprojectwebsite.com"
 */1 * * * * /usr/bin/node ~/project/cron.js
 ```
 
+Although keep reading, if you're not a fan of emails then you can send the error somewhere else,
+[to Slack for instance](#cronrun)
+
 ## Aliases
 
 You can attach events to times based on human-readable aliases rather than cron-timestamps, as defined in the
@@ -102,7 +105,7 @@ cron.on('every_twenty_minutes', function (callback) {
 cron.run();
 ```
 
-You can also add your own aliases if wish, using [`cron.aliases`](#cron-aliases).
+You can also add your own aliases if wish, using [`cron.aliases`](#cronaliases).
 
 ## Events
 
@@ -238,6 +241,10 @@ cron.run();
 
 - Where you've seen `require('./lib/some_file')`, that's not part of this project, that's just an example script to
   demonstrate how other modules and functions can interact with this module.
-- Questions? Awesome! [Open an issue](https://github.com/jdrydn/cronfile/issues) or feel free to
-  [tweet me](https://twitter.com/jdrydn) and I'll get back to you!
-- Who am I? If you really wanna know [here's my website](https://jdrydn.com)...
+- Questions? Awesome! [Open an issue][issues] or feel free to
+  [tweet me][my-twitter] and I'll get back to you!
+- Who am I? If you really wanna know [here's my website][my-website]...
+
+[issues]: https://github.com/jdrydn/cronfile/issues
+[my-twitter]: https://twitter.com/jdrydn
+[my-website]: https://jdrydn.com
