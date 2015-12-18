@@ -242,7 +242,7 @@ cron.run();
 
 ## One more thing
 
-- Want to know what's coming up? Check out [the wiki on GitHub][wiki]!
+- Want to know what's coming up? Feel free to read through [the TODO document on GitHub][todo]!
 - Where you've seen `require('./lib/some_file')`, that's not part of this project, that's just an example script to
   demonstrate how other modules and functions can interact with this module.
 - Questions? Awesome! [Open an issue][issues] or feel free to
@@ -252,4 +252,4 @@ cron.run();
 [issues]: https://github.com/jdrydn/cronfile/issues
 [my-twitter]: https://twitter.com/jdrydn
 [my-website]: https://jdrydn.com
-[wiki]: https://github.com/jdrydn/cronfile/wiki
+[todo]: https://github.com/jdrydn/cronfile/blob/master/TODO.md
