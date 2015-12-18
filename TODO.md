@@ -9,12 +9,12 @@ And of course, if you'd like to implement any of these features then feel free t
 
 - [ ] Ability to run specific cron operations on command
 - [ ] Ability to list all the cron operations this file has queued
-- [ ] Locking
+- [ ] Locking  
   At the moment the use-case is simply to add cron operations to a queue. However, this may not be the case for all
   applications of this module. Therefore, this module should implement an independent locking mechanism (ideally not
   relying on any external sources (cache, database, etc) (most probably file-based) to prevent the cron from executing
   multiple instances.
-- [ ] Simplified notifications to common sources
+- [ ] Simplified notifications to common sources  
   C'mon, everything hooks into Slack easily these days, right?
 
 [issues]: https://github.com/jdrydn/cronfile/issues
