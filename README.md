@@ -245,8 +245,7 @@ cron.run();
 - Want to know what's coming up? Feel free to read through [the TODO document on GitHub][todo]!
 - Where you've seen `require('./lib/some_file')`, that's not part of this project, that's just an example script to
   demonstrate how other modules and functions can interact with this module.
-- Questions? Awesome! [Open an issue][issues] or feel free to
-  [tweet me][my-twitter] and I'll get back to you!
+- Questions? Awesome! [Open an issue][issues] or feel free to [tweet me][my-twitter] and I'll get back to you!
 - Who am I? If you really wanna know [here's my website][my-website]...
 
 [issues]: https://github.com/jdrydn/cronfile/issues
