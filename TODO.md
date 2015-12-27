@@ -7,13 +7,13 @@ for new features check [the todo tag][todos] :smile:
 
 And of course, if you'd like to implement any of these features then feel free to submit a pull-request!
 
-- [ ] Ability to run specific cron operations on command
+- [x] Ability to run specific cron operations on command
 
 ```sh
 $ node cronfile.js 12:50 # Would execute any matching TODAY 12:50
 ```
 
-- [ ] Ability to list all the cron operations this file could execute
+- [x] Ability to list all the cron operations this file could execute
 
 ```
 $ node cronfile.js list

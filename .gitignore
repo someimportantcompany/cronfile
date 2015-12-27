@@ -1,4 +1,4 @@
 *.DS_Store
 coverage/
+cron.lock
 node_modules/
-
