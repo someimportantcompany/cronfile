@@ -176,8 +176,16 @@ describe('Cronfile', function () {
   });
 
   describe('#run', function () {
+    var revertLocking;
+    before(function () {
+      revertLocking = cronFile.__set__('LOCKING', {});
+    });
+    after(function () {
+      revertLocking && revertLocking();
+    });
+
     beforeEach(function () {
-      cronFile.__set__('run', false);
+      cronFile.__set__('IS_RUNNING', false);
     });
 
     it('should run nothing if no functions are added', function (done) {
@@ -317,6 +325,10 @@ describe('Cronfile', function () {
           done();
         });
     });
+  });
+
+  describe.skip('#run (with locking)', function () {
+
   });
 
   describe('#stop', function () {
