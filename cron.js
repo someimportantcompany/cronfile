@@ -9,30 +9,32 @@ var path = require('path');
 var EVENTS = [ 'start', 'stop' ];
 
 var LOCKING = (function () {
+  var LOCKING = {};
   var LOCKNAME = 'cron.lock';
   var LOCKPATH = path.join(__dirname, LOCKNAME);
 
-  return {
-    start: function (times, callback) {
-      if (IS_RUNNING) return callback(Error('You cannot run the Cron library twice'));
+  LOCKING.start = function (times, callback) {
+    if (IS_RUNNING) return callback(Error('You cannot run the Cron library twice'));
 
-      if (module.parent && module.parent.filename) {
-        LOCKNAME = path.basename(module.parent.filename, path.extname(module.parent.filename)) + '.lock';
-        LOCKPATH = path.join(path.dirname(module.parent.filename), LOCKNAME);
-      }
-
-      console.log('Locking with', LOCKPATH);
-
-      fs.access(LOCKPATH, function (err) {
-        if (err && err.code !== 'ENOENT') return callback(err || new Error('Cron already running'));
-        fs.writeFile(LOCKPATH, '1', 'utf8', callback);
-      });
-    },
-    stop: function (callback) {
-      IS_RUNNING = false;
-      fs.unlink(LOCKPATH, callback);
+    if (module.parent && module.parent.filename) {
+      LOCKNAME = path.basename(module.parent.filename, path.extname(module.parent.filename)) + '.lock';
+      LOCKPATH = path.join(path.dirname(module.parent.filename), LOCKNAME);
     }
+
+    console.log('Locking with', LOCKPATH);
+
+    fs.access(LOCKPATH, function (err) {
+      if (err && err.code !== 'ENOENT') return callback(err || new Error('Cron already running'));
+      fs.writeFile(LOCKPATH, '1', 'utf8', callback);
+    });
   };
+
+  LOCKING.stop = function (callback) {
+    IS_RUNNING = false;
+    fs.unlink(LOCKPATH, callback);
+  };
+
+  return LOCKING;
 })();
 
 var IS_RUNNING = false;
