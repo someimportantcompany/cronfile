@@ -1,10 +1,41 @@
 var async = require('async');
+var fs = require('fs');
 var later = require('later');
+var path = require('path');
 
 /**
  * A simple list of events so we know what is an event and what isn't!
  */
 var EVENTS = [ 'start', 'stop' ];
+
+var LOCKING = (function () {
+  var LOCKNAME = 'cron.lock';
+  var LOCKPATH = path.join(__dirname, LOCKNAME);
+
+  return {
+    start: function (times, callback) {
+      if (IS_RUNNING) return callback(Error('You cannot run the Cron library twice'));
+
+      if (module.parent && module.parent.filename) {
+        LOCKNAME = path.basename(module.parent.filename, path.extname(module.parent.filename)) + '.lock';
+        LOCKPATH = path.join(path.dirname(module.parent.filename), LOCKNAME);
+      }
+
+      console.log('Locking with', LOCKPATH);
+
+      fs.access(LOCKPATH, function (err) {
+        if (err && err.code !== 'ENOENT') return callback(err || new Error('Cron already running'));
+        fs.writeFile(LOCKPATH, '1', 'utf8', callback);
+      });
+    },
+    stop: function (callback) {
+      IS_RUNNING = false;
+      fs.unlink(LOCKPATH, callback);
+    }
+  };
+})();
+
+var IS_RUNNING = false;
 
 /**
  * Introducing, the Cron!
@@ -81,6 +112,11 @@ Cron.prototype.on = function (cronTime, cronDescription, cronFn) {
   return this;
 };
 
+/**
+ * List all the help descriptions stored in an easy-to-understand list!
+ *
+ * @return {String}
+ */
 Cron.prototype.list = function () {
   var out = [];
 
@@ -116,7 +152,14 @@ Cron.prototype.list = function () {
   return out.join('\n');
 };
 
-var run = false;
+/**
+ * Initiate the cron jobs
+ * Works out the current time down to the nearest minute, filters out all the jobs that don't match and run the rest
+ *
+ * (@param {String[]} args An optional array of string arguments)
+ * (@param {Function} callback An optional callback function to run on completion (takes a single error argument))
+ * @return void
+ */
 Cron.prototype.run = function (args, callback) {
   /* istanbul ignore next */
   if (!args && !callback) {
@@ -131,14 +174,17 @@ Cron.prototype.run = function (args, callback) {
 
   /* istanbul ignore next */
   if (!callback) callback = function (err) {
-    if (err) console.error(err.toString());
+    if (err) console.error(err.stack ? err.stack : err.toString());
     process.exit(err ? 1 : 0);
   };
 
-  if (run) return callback(Error('You cannot run the Cron library twice'));
-  run = true;
+  if (IS_RUNNING) return callback(new Error('You cannot run the Cron library twice'));
+  IS_RUNNING = true;
 
   var date = new Date();
+  var opts = {
+    use_locking: (args.indexOf('--no-locking') < 0)
+  };
 
   /**
    * If we have a set of arguments, then run them.
@@ -167,19 +213,46 @@ Cron.prototype.run = function (args, callback) {
   date.setSeconds(0); // Date has seconds, and we don't want seconds
 
   var fns = [];
+  var times = [];
   Object.keys(this._crons).forEach(function (time) {
-    if (later.schedule(later.parse.cron(time)).isValid(date)) fns = fns.concat(this._crons[time]);
+    if (later.schedule(later.parse.cron(time)).isValid(date)) {
+      fns = fns.concat(this._crons[time]);
+      times.push(time);
+    }
   }.bind(this));
 
+  this._events.start = this._events.start || [];
+  this._events.stop = this._events.stop || [];
+
+  if (opts.use_locking && LOCKING.start && LOCKING.stop) {
+    this._events.start.unshift(LOCKING.start.bind(null, times));
+    this._events.stop.unshift(LOCKING.stop.bind(null, times));
+  }
+
   async.series([].concat(
-    Array.isArray(this._events.start) ? this._events.start : [],
+    this._events.start,
     [ async.parallel.bind(async.parallel, fns) ],
-    Array.isArray(this._events.stop) ? this._events.stop : []
-  ), callback);
+    this._events.stop
+  ), function (err) {
+    if (err && IS_RUNNING && opts.use_locking && LOCKING.stop) {
+      return LOCKING.stop(function () {
+        callback(err);
+      });
+    }
+    else callback(err);
+  });
 };
 
+/**
+ * On emergency-exit situations, call just the stop functions.
+ *
+ * @param {Function} callback A callback argument taking an error function
+ */
 Cron.prototype.stop = function (callback) {
-  async.series(Array.isArray(this._events.stop) ? this._events.stop : [], callback);
+  async.series(Array.isArray(this._events.stop) ? this._events.stop : [], function (err) {
+    if (IS_RUNNING && LOCKING.stop) LOCKING.stop(function () { callback(err); });
+    else callback(err);
+  });
 };
 
 var cronfile = new Cron();
