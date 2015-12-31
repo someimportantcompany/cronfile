@@ -1,8 +1,23 @@
-var cron = require('cronfile');
-var kue = require('kue');
-var request = require('request');
+var cron = require('./cron'); // But obviously you're gonna use "cronfile" when you're using the module
 
-var queue = kue.createQueue();
+var queue = {
+  create: function () {
+    console.log('Queuing', arguments);
+
+    return {
+      save: function (callback) {
+        callback();
+      }
+    };
+  }
+};
+
+var request = {
+  post: function (req, callback) {
+    console.log('Requesting', req);
+    callback();
+  }
+};
 
 cron.on('every_five_minutes', 'Rebuild the content recommendations', function (callback) {
   queue.create('cron', {
