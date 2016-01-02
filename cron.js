@@ -3,22 +3,20 @@ var fs = require('fs');
 var later = require('later');
 var path = require('path');
 
-/**
- * A simple list of events so we know what is an event and what isn't!
- */
 var EVENTS = [ 'start', 'stop' ];
+var IS_RUNNING = false;
 
 var LOCKING = (function () {
   var LOCKING = {};
   var LOCKNAME = 'cron.lock';
-  var LOCKPATH = path.join(__dirname, LOCKNAME);
+  var LOCKPATH = path.join(process.env.CWD, LOCKNAME);
 
   LOCKING.start = function (times, callback) {
     if (IS_RUNNING) return callback(Error('You cannot run the Cron library twice'));
 
     if (module.parent && module.parent.filename) {
       LOCKNAME = path.basename(module.parent.filename, path.extname(module.parent.filename)) + '.lock';
-      LOCKPATH = path.join(path.dirname(module.parent.filename), LOCKNAME);
+      LOCKPATH = path.join(process.env.CWD, LOCKNAME);
     }
 
     console.log('Locking with', LOCKPATH);
@@ -36,8 +34,6 @@ var LOCKING = (function () {
 
   return LOCKING;
 })();
-
-var IS_RUNNING = false;
 
 /**
  * Introducing, the Cron!
