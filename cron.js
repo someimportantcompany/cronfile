@@ -9,14 +9,14 @@ var IS_RUNNING = false;
 var LOCKING = (function () {
   var LOCKING = {};
   var LOCKNAME = 'cron.lock';
-  var LOCKPATH = path.join(process.env.CWD, LOCKNAME);
+  var LOCKPATH = path.join(process.env.PWD, LOCKNAME);
 
   LOCKING.start = function (times, callback) {
     if (IS_RUNNING) return callback(Error('You cannot run the Cron library twice'));
 
     if (module.parent && module.parent.filename) {
       LOCKNAME = path.basename(module.parent.filename, path.extname(module.parent.filename)) + '.lock';
-      LOCKPATH = path.join(process.env.CWD, LOCKNAME);
+      LOCKPATH = path.join(process.env.PWD, LOCKNAME);
     }
 
     console.log('Locking with', LOCKPATH);
