@@ -1,8 +1,6 @@
 machine:
-  environment:
-    NODE_ENV: testing
   node:
-    version: 0.12.7
+    version: 4.5.0
   timezone: Atlantic/Reykjavik
 test:
   override:
