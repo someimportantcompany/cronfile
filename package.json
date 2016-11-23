@@ -46,6 +46,7 @@
     "bluebird": "^3.4.6",
     "chill-logger": "^1.2.0",
     "colors": "^1.1.2",
+    "coveralls": "^2.11.15",
     "istanbul": "^0.4.5",
     "jscs": "^3.0.7",
     "jshint": "^2.9.3",
