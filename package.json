@@ -11,7 +11,11 @@
     "preversion": "npm test",
     "postversion": "git push && git push --tags"
   },
-  "files": [ "bin", "lib", "plugins" ],
+  "files": [
+    "bin",
+    "lib",
+    "plugins"
+  ],
   "author": "James D <james@jdrydn.com> (https://jdrydn.com)",
   "homepage": "https://jdrydn.com/cronfile",
   "repository": {
@@ -46,6 +50,7 @@
     "jscs": "^3.0.7",
     "jshint": "^2.9.3",
     "mocha": "^3.0.2",
+    "nock": "^9.0.2",
     "rewire": "^2.5.2"
   }
 }
