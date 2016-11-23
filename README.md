@@ -1,6 +1,6 @@
 # Cronfile
 
-[![npm version](https://badge.fury.io/js/cronfile.svg)](https://badge.fury.io/js/cronfile)
+[![npm version](https://badge.fury.io/js/cronfile.svg)](https://www.npmjs.com/package/cronfile)
 ![Circle CI](https://circleci.com/gh/jdrydn/cronfile/tree/master.svg?style=shield)
 ![Coverage Status](https://coveralls.io/repos/jdrydn/cronfile/badge.svg?branch=master&service=github)
 
