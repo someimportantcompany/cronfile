@@ -153,6 +153,56 @@ This function takes an object where each object key is a valid cron timestamp an
 of strings (for multiple aliases to the same timestamp)) of the alias in question. It can be anything you want, but
 you must keep it unique (otherwise you'll start overwriting aliases and have unexpected side-effects!)
 
+## CLI Documentation
+
+So, you've written your functions, you've got everything running the way you want, now it's time to test your crons &
+then run your functions, with the CLI:
+
+```
+# You can either install globally
+$ npm install -g cronfile
+$ cronfile ./cron.js ./more/cron.js
+
+# Or you can install locally
+$ npm install --save cronfile
+$ node ./node_modules/.bin/cronfile ./cron.js ./more/cron.js
+```
+
+Either way, the CLI takes your cron files (i.e. the files with your `cron.on` calls) as arguments. If you don't add any
+files then the CLI will default to `cronfile.js`. Any missing files will throw errors on boot, too!
+
+Often `cronfile` is installed locally and an npm-script is assigned to it, for convenience, similar to:
+
+```json
+{
+  "name": "my-awesome-project",
+  "scripts": {
+    "cron": "cronfile cron.js"
+  },
+  "dependencies": {
+    "cronfile": "^2.0.0"
+  }
+}
+```
+
+And then executed with:
+
+```
+$ npm run cron
+```
+
+### Manually testing
+
+You can test your `cronfile` by passing an appropriate time to the CLI with `-t`:
+
+```
+# To execute at TODAY 12:12
+$ cronfile -t 12:21 cron.js
+
+# To execute at a specific day of the week, day, etc.
+$ cronfile -t "Wed Nov 23 2016 17:22:52 GMT+0000 (GMT)" cron.js
+```
+
 ## One more thing
 
 - Want to know what's coming up? Feel free to read through
