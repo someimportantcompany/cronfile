@@ -16,6 +16,9 @@
     "lib",
     "plugins"
   ],
+  "bin": {
+    "cronfile": "./bin/cronfile.js"
+  },
   "author": "James D <james@jdrydn.com> (https://jdrydn.com)",
   "homepage": "https://jdrydn.com/cronfile",
   "repository": {
