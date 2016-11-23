@@ -3,15 +3,15 @@ var https = require('https');
 var url = require('url');
 var version = require('../package.json').version;
 
-function transformError(err) {
+function formatErr(err) {
   return {
-    fallback: err.message || ('' + err),
+    fallback: (err.name || 'Error') + ': ' + (err.message || ('' + err)),
     color: 'danger',
-    text: err.message || ('' + err)
+    text: (err.name || 'Error') + ': ' + (err.message || ('' + err)),
   };
 }
 
-function transformResults(results) {
+function formatResults(results) {
   return {
     fallback: JSON.stringify(results),
     color: '#439FE0',
@@ -31,6 +31,9 @@ module.exports = function (opts) {
   var parsed_webhook_url = url.parse(opts.webhook_url);
   if (!parsed_webhook_url.hostname || !parsed_webhook_url.pathname) throw new Error('Invalid URL for webhook_url');
 
+  opts.formatErr = opts.formatErr || formatErr;
+  opts.formatResults = opts.formatResults || formatResults;
+
   var req_opts = {
     method: 'POST',
     hostname: parsed_webhook_url.hostname,
@@ -48,16 +51,23 @@ module.exports = function (opts) {
   if (opts.username) defaults.username = opts.username;
   if (opts.icon_emoji) defaults.icon_emoji = opts.icon_emoji;
 
-  return function (results, date) {
+  return function (results, date, callback) {
     var req_body = JSON.stringify(Object.assign({}, defaults, {
-      attachments: [ Object.assign((results instanceof Error) ? transformError(results) : transformResults(results), {
-        ts: date / 1000
-      }) ]
+      attachments: [
+        Object.assign((results instanceof Error ? opts.formatErr(results) : opts.formatResults(results)), {
+          ts: (date || Date.now()) / 1000
+        })
+      ]
     }));
 
+    /* istanbul ignore next */
+    callback = callback || function (err) {
+      if (results instanceof Error) console.error(err); // jshint ignore:line
+      else cron.emit('error', err);
+    };
+
     var req = https.request(req_opts, function (res) {
-      console.log('slack response', res.statusCode, res.headers);
-      if (res.statusCode === 200) return;
+      if (res.statusCode === 200) return callback();
 
       var res_body = '';
       res.setEncoding('utf8');
@@ -65,16 +75,15 @@ module.exports = function (opts) {
         res_body += chunk;
       });
       res.on('end', function () {
-        cron.emit('error', new Error(
-          'Bad response from Slack sending ' + req_body + ': ' + res.statusCode + ': ' + res_body
-        ));
+        var err = new Error('Bad response from Slack sending ' + req_body + ': ' + res.statusCode + ': ' + res_body);
+        callback(err);
       });
     });
 
+    /* istanbul ignore next */
     req.on('error', function (err) {
       err.message = 'Error sending data ' + req_body + ' to Slack: ' + err.message;
-      if (results instanceof Error) console.error(err); // jshint ignore:line
-      else cron.emit('error', err);
+      callback(err);
     });
 
     req.write(req_body);
