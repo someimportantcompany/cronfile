@@ -77,48 +77,6 @@ $ cronfile ./cron.js
 Although keep reading, if you're not a fan of emails then you can send the error somewhere else,
 [to Slack for instance](#cronrun)
 
-## Events
-
-`cronfile` now supports true events powered by an event emitter, so you can hook into various events that are emitted
-throughout the life cycle.
-
-### Started
-
-When `cronfile` starts, it loads the crons and waits for the next minute to start before. The `started` event emits
-when it's waiting, and includes the time it's waiting for.
-
-```js
-cron.on('started', function (wait_time) {
-  console.log('Waiting for', wait_time); // Waiting for 10s
-});
-```
-
-### Error
-
-When the `cronfile` errors, either internally or from one of your cron functions, you can handle them using the `error`
-event. The listener will be sent the error & if this came from a cron function then the date object that triggered the
-function will also be passed:
-
-```js
-cron.on('error', function (err, time) {
-  if (!time) console.error('Internal error:', err);
-  else console.error('Cron error:', time.toString(), err);
-});
-```
-
-### Tick
-
-Every minute the cronfile executes, it emits a `tick` event passing the time & the number of functions that matched the
-time.
-
-```js
-cron.on('tick', function (time, count) {
-  console.log('%s x%d', time.toString(), count);
-});
-```
-
-Ideal for monitoring your `cronfile` & ensuring it's executing on a minute basis.
-
 ## Aliases
 
 You can attach events to times based on human-readable aliases rather than cron-timestamps, as defined in the
@@ -152,6 +110,71 @@ cron.aliases({
 This function takes an object where each object key is a valid cron timestamp and the value is a string (or an array
 of strings (for multiple aliases to the same timestamp)) of the alias in question. It can be anything you want, but
 you must keep it unique (otherwise you'll start overwriting aliases and have unexpected side-effects!)
+
+## Events
+
+`cronfile` now supports true events powered by an event emitter, so you can hook into various events that are emitted
+throughout the life cycle. This also means the exposed `cron` instance has `on`, `once` and `emit` for you to use at
+your leisure.
+
+### Started
+
+When `cronfile` starts, it loads the crons and waits for the next minute to start before. The `started` event emits
+when it's waiting, and includes the time it's waiting for.
+
+```js
+cron.once('started', function (wait_time) {
+  console.log('Waiting for', wait_time); // Waiting for 10s
+});
+```
+
+### Error
+
+When the `cronfile` errors, either internally or from one of your cron functions, you can handle them using the `error`
+event. The listener will be sent the error & if this came from a cron function then the date object that triggered the
+function will also be passed:
+
+```js
+cron.on('error', function (err, time) {
+  if (!time) console.error('Internal error:', err);
+  else console.error('Cron error:', time.toString(), err);
+});
+```
+
+### Tick
+
+Every minute the cronfile executes, it emits a `tick` event passing the time & the number of functions that matched the
+time.
+
+```js
+cron.on('tick', function (time, count) {
+  console.log('%s x%d', time.toString(), count);
+});
+```
+
+Ideal for monitoring your `cronfile` & ensuring it's executing on it's minutely basis.
+
+### And your own!
+
+And of course, you can create your own events and fire them off whenever you see fit!
+
+```js
+cron.on('clear-generic-cache', function () {
+  // Do something
+});
+
+cron.on('*/15 * * * *', function () {
+  cron.emit('clear-generic-cache');
+});
+
+cron.on('0 */1 * * *', function () {
+  cron.emit('clear-generic-cache');
+});
+```
+
+**Note:** Take care when adding event names similar to cron timestamps, they may be interpreted as cron functions! And
+also take care when adding event names that are the same as [aliases](#aliases), since they too will be interpreted as
+cron functions!
 
 ## CLI Documentation
 
