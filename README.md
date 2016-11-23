@@ -1,14 +1,18 @@
 # Cronfile
 
-[![npm version](https://badge.fury.io/js/cronfile.svg)](https://badge.fury.io/js/cronfile)
+[![npm version](https://badge.fury.io/js/cronfile.svg)](https://www.npmjs.com/package/cronfile)
 ![Circle CI](https://circleci.com/gh/jdrydn/cronfile/tree/master.svg?style=shield)
 ![Coverage Status](https://coveralls.io/repos/jdrydn/cronfile/badge.svg?branch=master&service=github)
 
 A rather elegant solution to running cron jobs in Node.
 
+```sh
+$ npm install --save cronfile
 ```
-npm install cronfile
-```
+
+**Note:** This is for the new `cronfile`, which is now an in-memory cron-like execution service. For the older version
+of `cronfile`, which requires you to execute a script every minute using a pre-existing crontab,
+[see 1.0.0 here](https://github.com/jdrydn/cronfile/tree/1.0.0).
 
 ## Why
 
@@ -46,9 +50,8 @@ In it's simplest usage:
 ```js
 var cron = require('cronfile');
 
-cron.on('*/1 * * * *', function (callback) {
+cron.on('*/1 * * * *', function () {
   console.log('Executing this function every minute!');
-  callback();
 });
 
 cron.on('*/15 * * * *', function (callback) {
@@ -58,117 +61,91 @@ cron.on('*/15 * * * *', function (callback) {
 
 cron.on('*/20 * * * *', function (callback) {
   console.log('Executing this function every twenty minutes!');
-  callback();
+  callback(new Error('It failed, for some reason 😢'));
 });
-
-cron.run();
 ```
 
-All cron files made with `cronfile` are designed to be run every minute, so set your crontab to something like:
+Next, grab your friendly neighbourhood production environment ([PM2](https://github.com/Unitech/pm2),
+[Docker](https://www.docker.com/)) and run the cronfile:
 
-```
-*/1 * * * * /usr/bin/node ~/project/cron.js
-```
-
-Optionally, and wisely, you can add a `MAILTO` environment variable to get any error output emailed to you, like so:
-
-```
-# May require Postfix or an equivalent to be installed...
-# Ask your friendly neighbourhood sysops guy for more information!
-MAILTO="crons@myawesomeprojectwebsite.com"
-# m h dom mon dow command
-*/1 * * * * /usr/bin/node ~/project/cron.js
+```sh
+$ npm install -g cronfile
+# Assuming the above example is at cron.js
+$ cronfile ./cron.js
 ```
 
 Although keep reading, if you're not a fan of emails then you can send the error somewhere else,
 [to Slack for instance](#cronrun)
 
+## Events
+
+`cronfile` now supports true events powered by an event emitter, so you can hook into various events that are emitted
+throughout the life cycle.
+
+### Started
+
+When `cronfile` starts, it loads the crons and waits for the next minute to start before. The `started` event emits
+when it's waiting, and includes the time it's waiting for.
+
+```js
+cron.on('started', function (wait_time) {
+  console.log('Waiting for', wait_time); // Waiting for 10s
+});
+```
+
+### Error
+
+When the `cronfile` errors, either internally or from one of your cron functions, you can handle them using the `error`
+event. The listener will be sent the error & if this came from a cron function then the date object that triggered the
+function will also be passed:
+
+```js
+cron.on('error', function (err, time) {
+  if (!time) console.error('Internal error:', err);
+  else console.error('Cron error:', time.toString(), err);
+});
+```
+
+### Tick
+
+Every minute the cronfile executes, it emits a `tick` event passing the time & the number of functions that matched the
+time.
+
+```js
+cron.on('tick', function (time, count) {
+  console.log('%s x%d', time.toString(), count);
+});
+```
+
+Ideal for monitoring your `cronfile` & ensuring it's executing on a minute basis.
+
 ## Aliases
 
 You can attach events to times based on human-readable aliases rather than cron-timestamps, as defined in the
-[`aliases.json`](./aliases.json) file, so the above example could actually look like:
+[`aliases.json`](./lib/aliases.json) file, so the above example could actually look like:
 
 ```js
 var cron = require('cronfile');
 
-cron.on('every_minute', function (callback) {
+cron.on('every_minute', function () {
   console.log('Executing this function every minute!');
-  callback();
 });
 
-cron.on('every_fifteen_minutes', function (callback) {
+cron.on('every_fifteen_minutes', function () {
   console.log('Executing this function every fifteen minutes!');
-  callback();
 });
 
-cron.on('every_twenty_minutes', function (callback) {
+cron.on('every_twenty_minutes', function () {
   console.log('Executing this function every twenty minutes!');
-  callback();
-});
-
-cron.run();
-```
-
-You can also add your own aliases using [`cron.aliases`](#cronaliases).
-
-## Events
-
-There are two main events you can write hooks for: `start` and `stop`. As their names intuitively suggest, you can set
-functions to run when the cronfile starts (before any of the specific time-based functions run) and you can set
-functions to run after the cronfile has finished (after all the time-based functions have finished).
-
-For example, if all your time-based functions use a database connection:
-
-```js
-var connections = require('./lib/connections');
-var cron = require('cronfile');
-
-var connection = null;
-
-cron.on('start', function (callback) {
-  connections.getConnection(function (err, conn) {
-    if (err) return callback(err);
-
-    connection = conn;
-    callback();
-  });
-});
-
-cron.on('the_hour', function (callback) {
-  connection.runQuery('v1_reload_user_scores', callback);
-});
-
-cron.on('stop', function (callback) {
-  connection.release(callback);
-});
-
-cron.run();
-```
-
-## API
-
-### cron.on
-
-Add new cron functions to the cronfile. You can attach functions to specific cron-formatted times, or an alias, or an
-event:
-
-```js
-cron.on('*/1 * * * *', function (callback) {
-  console.log('Executing this function every minute!');
-  callback();
 });
 ```
 
-### cron.aliases
-
-Add new aliases to the cronfile for you to use.
+You can also add your own aliases using `cron.aliases`:
 
 ```js
 cron.aliases({
   '* 2 * * *': '2AM',
-  '* */5 * * *': [
-    'every_five_hours', 'five_hours'
-  ]
+  '* */5 * * *': [ 'every_five_hours', 'five_hours' ],
 });
 ```
 
@@ -176,80 +153,60 @@ This function takes an object where each object key is a valid cron timestamp an
 of strings (for multiple aliases to the same timestamp)) of the alias in question. It can be anything you want, but
 you must keep it unique (otherwise you'll start overwriting aliases and have unexpected side-effects!)
 
-### cron.run
+## CLI Documentation
+
+So, you've written your functions, you've got everything running the way you want, now it's time to test your crons &
+then run your functions, with the CLI:
 
 ```
-cron.run([callback])
+# You can either install globally
+$ npm install -g cronfile
+$ cronfile ./cron.js ./more/cron.js
+
+# Or you can install locally
+$ npm install --save cronfile
+$ node ./node_modules/.bin/cronfile ./cron.js ./more/cron.js
 ```
 
-This function executes the cronfile. You can only run this once, and it will error appropriately if you try to run it
-multiple times. It optionally takes a callback function that will have `err` as it's first argument, allowing you to
-perform custom actions when the cronfile has finished, although you may prefer to use a [`stop`](#events) event.
+Either way, the CLI takes your cron files (i.e. the files with your `cron.on` calls) as arguments. If you don't add any
+files then the CLI will default to `cronfile.js`. Any missing files will throw errors on boot, too!
 
-For example, to send errors to a Slack channel:
+Often `cronfile` is installed locally and an npm-script is assigned to it, for convenience, similar to:
 
-```js
-var Slack = require('./lib/slack');
-
-var bot = new Slack({
-  channel: '#alerts',
-  icon_emoji: ':robot_face:',
-  username: 'cron-bot'
-});
-
-cron.run(function (err) {
-  if (err) {
-    bot.error(err.toString(), function (err_slack) {
-      if (err_slack) {
-        console.error('An error occurred running the cron script');
-        console.error(err.toString());
-        console.error('Additionally, there was an error sending the error to Slack');
-        console.error(err_slack.toString());
-      }
-      process.exit(1);
-    });
+```json
+{
+  "name": "my-awesome-project",
+  "scripts": {
+    "cron": "cronfile cron.js"
+  },
+  "dependencies": {
+    "cronfile": "^2.0.0"
   }
-  else process.exit(0);
-});
+}
 ```
 
-## An Example Environment
+And then executed with:
 
 ```
-- app/
-- cron.js
-- scripts/
-  - crons/
-    - rebuild_user_scores.js
-    - reindex_comments_index.js
-  - development/
-  - production/
-  - staging/
-- tests/
+$ npm run cron
 ```
 
-```js
-var cron = require('cronfile');
+### Manually testing
 
-cron.on('every_minute', require('./scripts/crons/rebuild_user_scores'));
-cron.on('every_fifteen_minutes', require('./scripts/crons/reindex_comments_index'));
-
-cron.run();
-```
+You can test your `cronfile` by passing an appropriate time to the CLI with `-t`:
 
 ```
-*/1 * * * * /usr/bin/node /var/app/myproject/cron.js
+# To execute at TODAY 12:12
+$ cronfile -t 12:21 cron.js
+
+# To execute at a specific day of the week, day, etc.
+$ cronfile -t "Wed Nov 23 2016 17:22:52 GMT+0000 (GMT)" cron.js
 ```
 
 ## One more thing
 
-- Want to know what's coming up? Feel free to read through [the TODO document on GitHub][todo]!
-- Where you've seen `require('./lib/some_file')`, that's not part of this project, that's just an example script to
-  demonstrate how other modules and functions can interact with this module.
-- Questions? Awesome! [Open an issue][issues] or feel free to [tweet me][my-twitter] and I'll get back to you!
-- Who am I? If you really wanna know [here's my website][my-website]...
-
-[issues]: https://github.com/jdrydn/cronfile/issues
-[my-twitter]: https://twitter.com/jdrydn
-[my-website]: https://jdrydn.com
-[todo]: https://github.com/jdrydn/cronfile/blob/master/TODO.md
+- Want to know what's coming up? Feel free to read through
+  [the TODO document on GitHub](https://github.com/jdrydn/cronfile/blob/master/TODO.md)!
+- Questions? Awesome! [Open an issue](https://github.com/jdrydn/cronfile/issues) or feel free to
+  [tweet me](https://twitter.com/jdrydn) and I'll get back to you!
+- Who am I? If you really wanna know [here's my website](https://jdrydn.com)...

@@ -1,25 +1,29 @@
 {
   "name": "cronfile",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Simple JS-based cron operations",
   "main": "cron.js",
   "scripts": {
     "coveralls": "cat coverage/lcov.info | coveralls",
     "pretest": "jshint . && jscs .",
     "posttest": "istanbul check-coverage",
-    "test": "istanbul cover -x *.test.js _mocha -- -r should *.test.js",
+    "test": "istanbul cover _mocha -- tests/*.test.js",
     "preversion": "npm test",
     "postversion": "git push && git push --tags"
   },
   "files": [
-    "aliases.json",
-    "cron.js"
+    "bin",
+    "lib",
+    "plugins"
   ],
+  "bin": {
+    "cronfile": "./bin/cronfile.js"
+  },
   "author": "James D <james@jdrydn.com> (https://jdrydn.com)",
   "homepage": "https://jdrydn.com/cronfile",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jdrydn/cronfile.git"
+    "url": "https://github.com/jdrydn/cronfile"
   },
   "bugs": {
     "url": "https://github.com/jdrydn/cronfile/issues"
@@ -37,17 +41,20 @@
   ],
   "dependencies": {
     "async": "^1.5.0",
-    "later": "^1.2.0"
+    "later": "^1.2.0",
+    "ms": "^0.7.2",
+    "yargs": "^6.4.0"
   },
   "devDependencies": {
-    "coveralls": "^2.11.4",
-    "istanbul": "^0.4.1",
-    "jscs": "^2.7.0",
-    "jshint": "^2.8.0",
-    "lodash": "^3.10.1",
-    "mocha": "^2.3.4",
-    "rewire": "^2.5.1",
-    "should": "^5.2.0",
-    "supertest": "^1.1.0"
+    "bluebird": "^3.4.6",
+    "chill-logger": "^1.2.0",
+    "colors": "^1.1.2",
+    "coveralls": "^2.11.15",
+    "istanbul": "^0.4.5",
+    "jscs": "^3.0.7",
+    "jshint": "^2.9.3",
+    "mocha": "^3.0.2",
+    "nock": "^9.0.2",
+    "rewire": "^2.5.2"
   }
 }
