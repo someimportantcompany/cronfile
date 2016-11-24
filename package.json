@@ -1,8 +1,8 @@
 {
   "name": "cronfile",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Simple JS-based cron operations",
-  "main": "cron.js",
+  "main": "lib/cron.js",
   "scripts": {
     "coveralls": "cat coverage/lcov.info | coveralls",
     "pretest": "jshint . && jscs .",
