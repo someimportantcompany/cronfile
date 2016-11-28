@@ -37,6 +37,13 @@ args._.forEach(function (file) {
   require(file);
 });
 
+if (args.verbose >= 2) {
+  console.log('started', cron._events.listenerCount('started'));
+  console.log('tick', cron._events.listenerCount('tick'));
+  console.log('error', cron._events.listenerCount('error'));
+  console.log('crons', cron._crons.length);
+}
+
 function eachTick(date) {
   var fns = cron.get(date);
 
