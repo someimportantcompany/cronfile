@@ -140,7 +140,7 @@ describe('lib/cron', function () {
 
     cron.on('every_minute', function () {});
     assert.equal(cron._crons.length, 1, 'Failed to attach cron function to cron list');
-    assert.equal(cron._crons[0].raw_time, '*/1 * * * *');
+    assert.equal(cron._crons[0].time, '*/1 * * * *');
   });
 
   it('should allow an array of functions', function () {

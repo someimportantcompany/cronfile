@@ -47,8 +47,11 @@ if (args.verbose >= 2) {
 function eachTick(date) {
   var fns = cron.get(date);
 
-  if (args.verbose >= 1) console.log('\n%s - %d functions to run', date, fns.length); // jshint ignore:line
-  cron._events.emit('tick', date, fns.length);
+  if (args.verbose >= 1) {
+    console.log('\n%s - %d functions to run', date, fns.length); // jshint ignore:line
+    if (args.verbose >= 2) console.log('%s - %d functions in total', date, cron._crons.length); // jshint ignore:line
+  }
+  else cron._events.emit('tick', date, fns.length);
   if (fns.length === 0) return;
 
   async.parallel(fns.map(function (fn) {
@@ -79,7 +82,7 @@ if (args.time) {
   (function () {
     var wait_time = ((60 - (new Date()).getSeconds()) || 60) + 's';
     if (args.verbose >= 1) console.log('Waiting %s for the next minute', wait_time); // jshint ignore:line
-    cron._events.emit('started', wait_time);
+    else cron._events.emit('started', wait_time);
 
     setTimeout(function () {
       process.nextTick(function tock() {
