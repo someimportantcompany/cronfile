@@ -20,14 +20,9 @@
     "cronfile": "./bin/cronfile.js"
   },
   "author": "James D <james@jdrydn.com> (https://jdrydn.com)",
-  "homepage": "https://jdrydn.com/cronfile",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/jdrydn/cronfile"
-  },
-  "bugs": {
-    "url": "https://github.com/jdrydn/cronfile/issues"
-  },
+  "homepage": "https://someimportantcompany.github.com/cronfile",
+  "repository": "https://github.com/someimportantcompany/cronfile",
+  "bugs": "https://github.com/someimportantcompany/cronfile/issues",
   "license": "MIT",
   "keywords": [
     "cron",
