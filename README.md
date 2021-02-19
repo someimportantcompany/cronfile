@@ -1,10 +1,17 @@
-# Cronfile
+# cronfile
 
-[![npm version](https://badge.fury.io/js/cronfile.svg)](https://www.npmjs.com/package/cronfile)
-![Circle CI](https://circleci.com/gh/jdrydn/cronfile/tree/master.svg?style=shield)
-![Coverage Status](https://coveralls.io/repos/jdrydn/cronfile/badge.svg?branch=master&service=github)
+---
 
-A rather elegant solution to running cron jobs in Node.
+Hi there :wave:
+
+This library is deprecated, consider instead using your own cloud architecture to schedule functions:
+
+- [AWS Cloudwatch Events](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/RunLambdaSchedule.html)
+- [GCP Cloud Scheduler](https://cloud.google.com/scheduler)
+
+---
+
+Javascript-based CRON process.
 
 ```sh
 $ npm install --save cronfile
